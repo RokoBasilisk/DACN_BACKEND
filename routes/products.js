@@ -106,6 +106,27 @@ router.get("/", verifyToken, async (req, res) => {
   }
 });
 
+// @route POST api/products/filter/:query
+// @descs filted product
+// @access Private
+router.post("/filter/:query", verifyToken, async (req, res) => {
+  try {
+    const productFilterCondition = req.params.query;
+    const FilterProducts = await Product.find({
+      title: {
+        $regex: new RegExp(productFilterCondition.toLowerCase(), "i"),
+      },
+    });
+    res.json({
+      success: true,
+      Products: FilterProducts,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Interval server error" });
+  }
+});
+
 // @route DELETE api/products/:id
 // @desc DELETE product
 // @access Private

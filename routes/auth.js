@@ -24,6 +24,31 @@ router.get("/", verifyToken, async (req, res) => {
   }
 });
 
+// @route POST api/auth/change
+// @desc Change Password
+// @access Private
+router.post("/change", verifyToken, async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  try {
+    const user = await User.findById(req.userId);
+    const passwordValid = await argon2.verify(user.password, oldPassword);
+    if (!passwordValid)
+      return res.json({ success: false, message: "Incorrect Password" });
+    const hashedUserPassword = await argon2.hash(newPassword);
+    const UserAfter = await User.findOneAndUpdate(
+      { _id: req.userId },
+      { $set: { password: hashedUserPassword } },
+      { new: true }
+    );
+    if (UserAfter) {
+      return res.json({ success: true, message: "Update Successfully" });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
+
 // @route POST api/auth/register
 // @desc Register user
 // @access Public
@@ -92,6 +117,7 @@ router.post("/login", async (req, res) => {
         .json({ success: false, message: "Incorrect username or password" });
 
     // Username found
+
     const passwordValid = await argon2.verify(user.password, password);
     if (!passwordValid)
       return res

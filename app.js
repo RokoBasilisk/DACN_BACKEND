@@ -12,6 +12,12 @@ const customerRouter = require("./routes/customer");
 const productsRouter = require("./routes/products");
 const billsRouter = require("./routes/bill");
 //Middleware using
+app.use(
+  bodyParser.urlencoded({
+    // to support URL-encoded bodies
+    extended: true,
+  })
+);
 app.use(bodyParser.json());
 app.use(cors());
 app.use("/uploads", express.static("uploads"));

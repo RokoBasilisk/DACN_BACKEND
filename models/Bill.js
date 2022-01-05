@@ -25,6 +25,10 @@ const BillSchema = mongoose.Schema({
     type: Number,
     required: true,
   },
+  status: {
+    type: String,
+    required: true,
+  },
   customer: {
     type: Schema.Types.ObjectId,
     ref: "customers",
